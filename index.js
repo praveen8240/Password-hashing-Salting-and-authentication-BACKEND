@@ -107,11 +107,14 @@ app.post('/create', async (req, res) => {
 app.post("/login",async(req,res)=>{
     try{
         const { username, password } = req.body;
-        const existingPerson = await Person.findOne({ username : username, password : password });
-        if(existingPerson){
-            return res.json({succes : "login success"});
+        const user = await Person.findOne({username : username});
+        if(!user) res.json({message:"no such user"})
+        else console.log("user found")
+        const passwordMatch =await user.comparePassword(password);
+        if(passwordMatch){
+            res.json({message:"success"})
         }else{
-            return res.json({failed : "Login failed"});
+            res.json({message:"wrong password"})
         }
     }catch(err){
         console.log(err)
